@@ -1,7 +1,6 @@
 package com.su8y.bootstrap.adapter.in.web;
 
-import com.su8y.bootstrap.adapter.in.web.common.ApiResponse;
-import com.su8y.bootstrap.application.port.in.IssueUseCase;
+import com.su8y.paia.application.port.in.IssueUseCase;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,8 +21,15 @@ public class IssueController {
 
 	@GetMapping("/summary")
 	@PreAuthorize("permitAll()")
-	public ResponseEntity<ApiResponse<?>> getDailyIssueSummary() {
-		var summary = issueUseCase.getDailyIssueSummary();
-		return ResponseEntity.ok(ApiResponse.success(summary));
+	public ResponseEntity<?> getDailyIssueSummary() {
+
+		return ResponseEntity.ok(issueUseCase.getAllIssues());
+	}
+
+	@GetMapping("/create")
+	@PreAuthorize("permitAll()")
+	public ResponseEntity<?> sceduleDailyIssueSummary() {
+		issueUseCase.analyzeNews("이슈를 생성해줘");
+		return ResponseEntity.ok(issueUseCase.getLatestSectorScores());
 	}
 }

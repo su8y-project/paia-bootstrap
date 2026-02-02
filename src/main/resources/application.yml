@@ -1,19 +1,4 @@
 spring:
-  ai:
-    openai:
-      api-key: ${OPENAI_API_KEY}
-    google:
-      genai:
-        api-key: ${GEMINI_API_KEY}
-        chat:
-          options:
-            model: gemini-flash-latest
-            temperature: 0.2
-    vertex:
-      ai:
-        gemini:
-          project-id: ${GEMINI_PROJECT_ID}
-          location: ${GEMINI_LOCATION:asia-northeast1}
   application:
     name: api-server
 
@@ -25,7 +10,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
@@ -34,7 +19,7 @@ spring:
     open-in-view: false
 
   profiles:
-    include: oauth,monitoring
+    include: oauth,monitoring,paiaadapter
   data:
     redis:
       host: ${REDIS_HOST:localhost}

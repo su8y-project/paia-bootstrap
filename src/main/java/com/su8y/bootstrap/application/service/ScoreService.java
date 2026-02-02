@@ -3,12 +3,25 @@ package com.su8y.bootstrap.application.service;
 import com.su8y.bootstrap.application.port.in.ScoreUseCase;
 import com.su8y.bootstrap.domain.score.StockRank;
 import com.su8y.bootstrap.domain.score.TagRank;
+import com.su8y.paia.application.port.in.IssueUseCase;
+import com.su8y.paia.application.port.out.SectorRepository;
+import com.su8y.paia.core.domain.Sector;
+import com.su8y.paia.core.domain.SectorScore;
+
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class ScoreService implements ScoreUseCase {
+	private final SectorRepository sectorRepository;
+	private final IssueUseCase issueUseCase;
 
     @Override
     public List<StockRank> getStockScoreRanks() {
@@ -29,18 +42,30 @@ public class ScoreService implements ScoreUseCase {
 
     @Override
     public List<TagRank> getTagScoreRanks() {
-        TagRank rank1 = new TagRank();
-        rank1.setSectorCode("IT_TECH");
-        rank1.setName("IT/기술주");
-        rank1.setFinalScore(92.5);
-        rank1.setRelatedIssues(List.of());
+		Map<String, Double> scoreMap = issueUseCase.getLatestSectorScores().stream()
+				.collect(Collectors.toMap(
+						SectorScore::sectorId,
+						SectorScore::score,
+						(existing, replacement) -> existing // 중복 ID 발생 시 기존 값 유지
+				));
+		List<Sector> allByLevel = sectorRepository.findAllByLevel(2);
 
-        TagRank rank2 = new TagRank();
-        rank2.setSectorCode("FINANCE");
-        rank2.setName("금융/은행");
-        rank2.setFinalScore(45.8);
-        rank2.setRelatedIssues(List.of());
+		return allByLevel.stream().map(sector -> {
+					TagRank rank = new TagRank();
+					rank.setSectorCode(sector.code());
+					rank.setName(sector.name());
 
-        return List.of(rank1, rank2);
+					// 3. Map에서 해당 섹터의 점수를 가져오고, 없으면 0.0 처리
+					Double score = scoreMap.getOrDefault(sector.id(), 0.0);
+					rank.setFinalScore(score);
+
+					// 4. 연관 이슈 (현재는 빈 리스트이나, 추후 확장성 고려)
+					rank.setRelatedIssues(List.of());
+
+					return rank;
+				})
+				// 5. 점수가 높은 순으로 정렬 (보통 랭킹은 높은 순이니까요)
+				.sorted(Comparator.comparing(TagRank::getFinalScore).reversed())
+				.toList();
     }
 }

@@ -2,10 +2,12 @@ package com.su8y.bootstrap;
 
 
 import com.su8y.auth.adaptor.Su8yAuthDsl;
+import com.su8y.paia.infrastructure.CoreConfig;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
@@ -28,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
+@Import(CoreConfig.class)
 public class AppConfig {
 	private final Su8yAuthDsl su8YAuthDsl; // Starter에서 주입받음
 
