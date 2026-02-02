@@ -1,0 +1,41 @@
+### Java ###
+*.class
+*.log
+*.ctxt
+
+# JVM crash logs
+hs_err_pid*
+
+### Build Output
+/target/
+/build/
+
+### IDE ###
+.idea/
+*.iws
+*.iml
+*.ipr
+
+.project
+.classpath
+.settings/
+.factorypath
+
+.vscode/
+
+### OS ###
+.DS_Store
+Tumbs.db
+
+### Spring Boot ###
+.gradle
+build/
+/logs/
+/bootstrap/logs/
+
+.env
+package-lock.json
+node_modules/
+node_modules
+
+.env.*

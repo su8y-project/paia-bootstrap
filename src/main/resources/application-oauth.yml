@@ -1,0 +1,7 @@
+oauth2:
+  providers:
+    github.client-id: ${OAUTH_GITHUB_CLIENT_ID}
+    github.client-secret: ${OAUTH_GITHUB_CLIENT_SECRET}
+    github.redirect-uri: ${OAUTH_GITHUB_REDIRECT_URL}
+    github.authorization-url: https://github.com/login/oauth/authorize
+    github.scope: scope1,scope2

@@ -1,0 +1,42 @@
+repositories {
+    mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
+    maven { url 'https://repo.spring.io/snapshot' }
+    maven {
+        name = 'Central Portal Snapshots'
+        url = 'https://central.sonatype.com/repository/maven-snapshots/'
+    }
+}
+
+dependencies {
+    implementation 'com.su8y.common:api'
+    implementation 'com.su8y.common:logging'
+    implementation 'com.su8y.common:id-generator'
+    implementation 'com.su8y.user:user-application'
+    implementation 'com.su8y.user:user-adaptor'
+    implementation 'com.su8y.auth:auth-application'
+    implementation 'com.su8y.auth:auth-infrastructure'
+    implementation 'com.su8y.common.resilience:resilience-api'
+    implementation 'com.su8y.common.resilience:resilience-core'
+    implementation 'com.su8y.common.resilience:resilience4j-provider'
+
+
+    testRuntimeOnly 'com.h2database:h2'
+    runtimeOnly 'org.postgresql:postgresql'
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    // Replace the following with the specific module dependencies (e.g., spring-ai-openai) or starter modules (e.g., spring-ai-starter-model-openai) that you wish to use
+    implementation 'org.springframework.ai:spring-ai-openai'
+    implementation 'org.springframework.ai:spring-ai-starter-model-google-genai'
+
+    implementation 'org.springframework.boot:spring-boot-devtools'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+}
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
+    }
+}
