@@ -1,5 +1,6 @@
 package com.su8y.bootstrap.adapter.in.web;
 
+import com.su8y.bootstrap.adapter.in.web.common.ApiResponse;
 import com.su8y.paia.application.port.in.IssueUseCase;
 
 import org.springframework.http.ResponseEntity;
@@ -21,9 +22,9 @@ public class IssueController {
 
 	@GetMapping("/summary")
 	@PreAuthorize("permitAll()")
-	public ResponseEntity<?> getDailyIssueSummary() {
+	public ResponseEntity<ApiResponse<?>> getDailyIssueSummary() {
 
-		return ResponseEntity.ok(issueUseCase.getAllIssues());
+		return ResponseEntity.ok(ApiResponse.success(issueUseCase.getAllIssues()));
 	}
 
 	@GetMapping("/create")
