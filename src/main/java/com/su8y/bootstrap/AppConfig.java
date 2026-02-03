@@ -61,6 +61,19 @@ public class AppConfig {
 	}
 
 	@Bean
+	@Order(2)
+	public SecurityFilterChain su8ySecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
+		httpSecurity
+				.securityMatcher("/auth/**")
+				.authorizeHttpRequests(auth -> auth
+						.anyRequest().permitAll()
+				).with(this.su8YAuthDsl, Customizer.withDefaults())
+				.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+				.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+		return httpSecurity.build();
+	}
+	@Bean
 	public SecurityFilterChain defaultFilterChain(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity
 				.authorizeHttpRequests(auth -> auth
