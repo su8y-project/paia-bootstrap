@@ -2,7 +2,6 @@ package com.su8y.bootstrap;
 
 
 import com.su8y.auth.adaptor.Su8yAuthDsl;
-import com.su8y.bootstrap.exception.GuestAccessDeniedHandler;
 import com.su8y.paia.infrastructure.CoreConfig;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +18,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -53,10 +51,10 @@ public class AppConfig {
 				.securityMatcher("/api/**")
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/api/admin/**", "/api/secure/**").hasRole("ADMIN")
-						.anyRequest().permitAll()
+						.requestMatchers("/api/v1/user/profile/**").fullyAuthenticated()
+						.requestMatchers("/api/v1/**").permitAll()
+						.anyRequest().authenticated()
 				)
-				.exceptionHandling(exception ->
-						exception.accessDeniedHandler(new GuestAccessDeniedHandler()))
 				.with(this.su8YAuthDsl, Customizer.withDefaults())
 				.csrf(AbstractHttpConfigurer::disable)
 				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -71,9 +69,9 @@ public class AppConfig {
 		httpSecurity
 				.securityMatcher("/auth/**")
 				.authorizeHttpRequests(auth -> auth
-						.anyRequest().permitAll()
-				).with(this.su8YAuthDsl, Customizer.withDefaults())
-				.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+						.anyRequest().permitAll())
+				.with(this.su8YAuthDsl, Customizer.withDefaults())
+				.csrf(AbstractHttpConfigurer::disable)
 				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		return httpSecurity.build();
