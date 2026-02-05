@@ -2,6 +2,7 @@ package com.su8y.bootstrap;
 
 
 import com.su8y.auth.adaptor.Su8yAuthDsl;
+import com.su8y.bootstrap.exception.GuestAccessDeniedHandler;
 import com.su8y.paia.infrastructure.CoreConfig;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +16,7 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -52,8 +54,11 @@ public class AppConfig {
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/api/admin/**", "/api/secure/**").hasRole("ADMIN")
 						.anyRequest().permitAll()
-				).with(this.su8YAuthDsl, Customizer.withDefaults())
-				.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+				)
+				.exceptionHandling(exception ->
+						exception.accessDeniedHandler(new GuestAccessDeniedHandler()))
+				.with(this.su8YAuthDsl, Customizer.withDefaults())
+				.csrf(AbstractHttpConfigurer::disable)
 				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
@@ -73,6 +78,7 @@ public class AppConfig {
 				.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		return httpSecurity.build();
 	}
+
 	@Bean
 	public SecurityFilterChain defaultFilterChain(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity
@@ -85,10 +91,8 @@ public class AppConfig {
 
 	@Bean
 	public RoleHierarchy roleHierarchy() {
-		RoleHierarchyImpl hierarchy = new RoleHierarchyImpl();
-		hierarchy.setHierarchy("ROLE_ADMIN > ROLE_MANAGER\n" +
-				"ROLE_MANAGER > ROLE_USER");
-		return hierarchy;
+		return RoleHierarchyImpl.fromHierarchy("ROLE_ADMIN > ROLE_USER\n" +
+				"ROLE_USER > ROLE_GUEST");
 	}
 
 	@Bean
