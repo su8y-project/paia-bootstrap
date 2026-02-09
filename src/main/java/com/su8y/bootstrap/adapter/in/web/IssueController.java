@@ -32,10 +32,4 @@ public class IssueController {
 		return ResponseEntity.ok(ApiResponse.success(List.of(response)));
 	}
 
-	@GetMapping("/create")
-	@PreAuthorize("permitAll()")
-	public ResponseEntity<?> sceduleDailyIssueSummary() {
-		issueUseCase.analyzeNews("이슈를 생성해줘");
-		return ResponseEntity.ok(issueUseCase.getLatestSectorScores());
-	}
 }
